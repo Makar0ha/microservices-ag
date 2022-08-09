@@ -1,5 +1,8 @@
-package com.customer;
+package com.customer.controller;
 
+import com.customer.dto.CustomerRegistrationRequest;
+import com.customer.service.CustomerService;
+import com.customer.entity.Customer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
