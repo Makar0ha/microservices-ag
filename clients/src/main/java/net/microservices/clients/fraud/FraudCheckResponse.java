@@ -1,4 +1,4 @@
-package com.customer.dto;
+package net.microservices.clients.fraud;
 
 public record FraudCheckResponse(Boolean isFraudster) {
 }

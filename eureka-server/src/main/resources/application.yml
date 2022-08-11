@@ -7,3 +7,4 @@ eureka:
 spring:
   application:
     name: eureka-server
+#    http://localhost:5050/browser/

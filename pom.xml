@@ -7,6 +7,7 @@
         <module>customer</module>
         <module>fraud</module>
         <module>eureka-server</module>
+        <module>clients</module>
 
     </modules>
     <parent>
@@ -52,6 +53,10 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
