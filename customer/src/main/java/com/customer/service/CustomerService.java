@@ -6,6 +6,8 @@ import com.customer.repo.CustomerRepository;
 import lombok.AllArgsConstructor;
 import net.microservices.clients.fraud.FraudCheckResponse;
 import net.microservices.clients.fraud.FraudClient;
+import net.microservices.clients.notification.NotificationClient;
+import net.microservices.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,6 +20,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final RestTemplate restTemplate;
     private final FraudClient fraudClient;
+    private final NotificationClient notificationClient;
 
     @Transactional
     public Customer registerCustomer(CustomerRegistrationRequest request) {
@@ -29,16 +32,19 @@ public class CustomerService {
         customerRepository.saveAndFlush(customer);
 
         FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customer.getId());
-//                restTemplate.getForObject(
-//                "http://FRAUD/api/v1/fraud-check/{customerId}",
-//                FraudCheckResponse.class,
-//                customer.getId()
-//        );
-
 
         if (fraudCheckResponse.isFraudster()) {
             throw new IllegalStateException("fraudster");
         }
+
+        notificationClient.sendNotification(
+                new NotificationRequest(
+                        customer.getId(),
+                        customer.getEmail(),
+                        String.format("Hi, %s, welcome to Microservices", customer.getFirstName())
+                )
+        );
+
         return customer;
     }
 }
