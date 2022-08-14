@@ -4,9 +4,9 @@ import com.customer.dto.CustomerRegistrationRequest;
 import com.customer.entity.Customer;
 import com.customer.repo.CustomerRepository;
 import lombok.AllArgsConstructor;
+import net.microservices.amqp.RabbitMQMessageProducer;
 import net.microservices.clients.fraud.FraudCheckResponse;
 import net.microservices.clients.fraud.FraudClient;
-import net.microservices.clients.notification.NotificationClient;
 import net.microservices.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -20,7 +20,8 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final RestTemplate restTemplate;
     private final FraudClient fraudClient;
-    private final NotificationClient notificationClient;
+
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
     @Transactional
     public Customer registerCustomer(CustomerRegistrationRequest request) {
@@ -37,13 +38,15 @@ public class CustomerService {
             throw new IllegalStateException("fraudster");
         }
 
-        notificationClient.sendNotification(
-                new NotificationRequest(
-                        customer.getId(),
-                        customer.getEmail(),
-                        String.format("Hi, %s, welcome to Microservices", customer.getFirstName())
-                )
+        NotificationRequest notificationRequest = new NotificationRequest(
+                customer.getId(),
+                customer.getEmail(),
+                String.format("Hi, %s, welcome to Microservices", customer.getFirstName())
         );
+
+        rabbitMQMessageProducer.publish(notificationRequest,
+                "internal.exchange",
+                "internal.notification.routing-key");
 
         return customer;
     }

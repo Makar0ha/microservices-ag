@@ -1,4 +1,4 @@
-package net.microservices.notification;
+package net.microservices.notification.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
